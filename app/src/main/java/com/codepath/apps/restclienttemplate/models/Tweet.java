@@ -27,6 +27,7 @@ public class Tweet {
     public String media_url;
     public Integer media_height;
     public Integer media_width;
+    public String id_str;
 
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
@@ -35,6 +36,7 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.relativeTime = getRelativeTimeAgo(jsonObject.getString("created_at"));
+        tweet.id_str = jsonObject.getString("id_str");
         JSONObject entities = jsonObject.getJSONObject("entities");
         if (entities.has("media")) {
             JSONObject media = entities.getJSONArray("media").getJSONObject(0);

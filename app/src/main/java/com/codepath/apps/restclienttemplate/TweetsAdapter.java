@@ -1,6 +1,9 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -63,10 +68,18 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             binding = ItemTweetBinding.bind(itemView);
         }
 
-        public void bind(Tweet tweet) {
+        public void bind(final Tweet tweet) {
             binding.tvBody.setText(tweet.body);
             binding.tvScreenName.setText(tweet.user.screenName);
             binding.tvRelativeTime.setText(tweet.relativeTime);
+            binding.ivReplyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ComposeActivity.class);
+                    intent.putExtra("tweet", Parcels.wrap(tweet));
+                    ((Activity) context).startActivityForResult(intent, TimelineActivity.REQUEST_CODE);
+                }
+            });
             if (tweet.media_url.isEmpty()) {
                 binding.ivMediaImage.setVisibility(View.GONE);
             } else {

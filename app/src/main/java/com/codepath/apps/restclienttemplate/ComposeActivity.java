@@ -31,6 +31,10 @@ public class ComposeActivity extends AppCompatActivity {
 
     MenuItem miActionProgressItem;
 
+    Tweet replyTweet;
+
+    JsonHttpResponseHandler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,21 +43,14 @@ public class ComposeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         client = TwitterApp.getRestClient(this);
-    }
 
-    public void onButtonClick(View v) {
-        String tweetContent = binding.etCompose.getText().toString();
-        if (tweetContent.isEmpty()) {
-            Toast.makeText(ComposeActivity.this, "Sorry, your tweet cannot be empty", Toast.LENGTH_LONG).show();
-            return;
+        replyTweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
+
+        if (replyTweet != null) {
+            binding.etCompose.setText('@'+replyTweet.user.screenName+' ');
         }
-        if (tweetContent.length() > MAX_TWEET_LENGTH) {
-            Toast.makeText(ComposeActivity.this, "Sorry, your tweet is too long", Toast.LENGTH_LONG).show();
-            return;
-        }
-        showProgressBar();
-        // Make an API call to Twitter to publish the tweet
-        client.publishTweet(tweetContent, new JsonHttpResponseHandler() {
+
+        handler = new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -76,7 +73,27 @@ public class ComposeActivity extends AppCompatActivity {
                 hideProgressBar();
                 Toast.makeText(ComposeActivity.this, "Error: " + response, Toast.LENGTH_LONG).show();
             }
-        });
+        };
+    }
+
+    public void onButtonClick(View v) {
+        String tweetContent = binding.etCompose.getText().toString();
+        if (tweetContent.isEmpty()) {
+            Toast.makeText(ComposeActivity.this, "Sorry, your tweet cannot be empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (tweetContent.length() > MAX_TWEET_LENGTH) {
+            Toast.makeText(ComposeActivity.this, "Sorry, your tweet is too long", Toast.LENGTH_LONG).show();
+            return;
+        }
+        showProgressBar();
+        // Make an API call to Twitter to publish the tweet
+        if (replyTweet != null) {
+            client.publishReplyTweet(tweetContent, replyTweet.id_str, handler);
+        } else {
+            client.publishTweet(tweetContent, handler);
+        }
+
     }
 
     @Override
