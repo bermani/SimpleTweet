@@ -31,6 +31,7 @@ public class Tweet {
 
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
+        Log.i("WHAT", jsonObject.toString());
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
         tweet.createdAt = jsonObject.getString("created_at");

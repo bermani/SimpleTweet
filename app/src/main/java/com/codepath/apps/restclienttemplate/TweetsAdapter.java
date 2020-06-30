@@ -26,10 +26,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     Context context;
     List<Tweet> tweets;
+    TwitterClient client;
 
-    public TweetsAdapter(Context context, List<Tweet> tweets) {
+    public TweetsAdapter(Context context, List<Tweet> tweets, TwitterClient client) {
         this.context = context;
         this.tweets = tweets;
+        this.client = client;
     }
 
     @NonNull
@@ -72,6 +74,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             binding.tvBody.setText(tweet.body);
             binding.tvScreenName.setText(tweet.user.screenName);
             binding.tvRelativeTime.setText(tweet.relativeTime);
+
+            // reply button click should go to compose activity
             binding.ivReplyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -80,13 +84,36 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                     ((Activity) context).startActivityForResult(intent, TimelineActivity.REQUEST_CODE);
                 }
             });
+
+            // retweet on click should retweet and change the color
+            binding.ivRetweetButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+
+            // body on click should go to detail activity
+            binding.tvBody.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra("tweet", Parcels.wrap(tweet));
+                    context.startActivity(intent);
+                }
+            });
+
+            // load tweet image
             if (tweet.media_url.isEmpty()) {
                 binding.ivMediaImage.setVisibility(View.GONE);
             } else {
                 binding.ivMediaImage.setVisibility(View.VISIBLE);
                 Glide.with(context).load(tweet.media_url).override(tweet.media_width, tweet.media_height).into(binding.ivMediaImage);
             }
+
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
+
+
         }
     }
 

@@ -70,6 +70,20 @@ public class TwitterClient extends OAuthBaseClient {
 		params.put("auto_populate_reply_metadata", true);
 		client.post(apiUrl, params, "", handler);
 	}
+
+	public void favoriteTweet(String tweetID, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/retweet:id.json");
+		RequestParams params = new RequestParams();
+		params.put("id",tweetID);
+		client.post(apiUrl,params,"",handler);
+	}
+
+	public void unfavoriteTweet(String tweetID, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/unretweet:id.json");
+		RequestParams params = new RequestParams();
+		params.put("id",tweetID);
+		client.post(apiUrl,params,"",handler);
+	}
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
 	 * 	  i.e getApiUrl("statuses/home_timeline.json");
 	 * 2. Define the parameters to pass to the request (query or body)
