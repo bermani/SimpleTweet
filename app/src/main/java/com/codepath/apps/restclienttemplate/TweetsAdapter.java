@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
@@ -66,6 +67,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             binding.tvBody.setText(tweet.body);
             binding.tvScreenName.setText(tweet.user.screenName);
             binding.tvRelativeTime.setText(tweet.relativeTime);
+            if (tweet.media_url.isEmpty()) {
+                binding.ivMediaImage.setVisibility(View.GONE);
+            } else {
+                binding.ivMediaImage.setVisibility(View.VISIBLE);
+                Glide.with(context).load(tweet.media_url).override(tweet.media_width, tweet.media_height).into(binding.ivMediaImage);
+            }
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
         }
     }

@@ -1,10 +1,12 @@
 package com.codepath.apps.restclienttemplate.models;
 
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,12 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Parcel
 public class Tweet {
+
+    // empty constructor for parceler
+    public Tweet() {}
 
     public String body;
     public String createdAt;
     public User user;
     public String relativeTime;
+    public String media_url;
+    public Integer media_height;
+    public Integer media_width;
+
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
@@ -25,6 +35,18 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.relativeTime = getRelativeTimeAgo(jsonObject.getString("created_at"));
+        JSONObject entities = jsonObject.getJSONObject("entities");
+        if (entities.has("media")) {
+            JSONObject media = entities.getJSONArray("media").getJSONObject(0);
+            tweet.media_url = media.getString("media_url_https");
+            JSONObject sizes = media.getJSONObject("sizes").getJSONObject("small");
+            tweet.media_height = sizes.getInt("h");
+            tweet.media_width = sizes.getInt("w");
+        } else {
+            tweet.media_url = "";
+            tweet.media_height = 0;
+            tweet.media_width = 0;
+        }
         return tweet;
     }
 
