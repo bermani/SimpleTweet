@@ -34,7 +34,7 @@ public class TimelineActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshContainer;
     List<Tweet> tweets;
     TweetsAdapter adapter;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +107,10 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.i(TAG,"onSuccess" + json.toString());
-
+                swipeRefreshContainer.setRefreshing(false);
                 try {
                     adapter.clear();
                     adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
-                    swipeRefreshContainer.setRefreshing(false);
                 } catch (JSONException e) {
                     Log.e(TAG,"Json exception", e);
                     e.printStackTrace();
