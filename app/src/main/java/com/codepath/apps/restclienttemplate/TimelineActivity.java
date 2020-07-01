@@ -8,6 +8,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.system.Int64Ref;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +38,8 @@ public class TimelineActivity extends AppCompatActivity {
     TweetsAdapter adapter;
     MenuItem miActionProgressItem;
 
+    Long max_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +66,35 @@ public class TimelineActivity extends AppCompatActivity {
         adapter = new TweetsAdapter(this, tweets, client);
 
         // Recycler view setup: layout manager and the adapter
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(manager);
         rvTweets.setAdapter(adapter);
+        rvTweets.addOnScrollListener(new EndlessRecyclerViewScrollListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                client.getMoreHomeTimeline(max_id.toString(), new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        try {
+                            List<Tweet> newTweets = Tweet.fromJsonArray(json.jsonArray);
+                            adapter.addAll(newTweets);
+                            max_id = findSmallestId(newTweets);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e(TAG,"Json exception", e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.i(TAG,"onFailure" + response, throwable);
+                        swipeRefreshContainer.setRefreshing(false);
+                        Toast.makeText(getApplicationContext(), "Error: " + response, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+
         populateHomeTimeline();
     }
 
@@ -127,7 +157,9 @@ public class TimelineActivity extends AppCompatActivity {
                 swipeRefreshContainer.setRefreshing(false);
                 try {
                     adapter.clear();
-                    adapter.addAll(Tweet.fromJsonArray(json.jsonArray));
+                    List<Tweet> newTweets = Tweet.fromJsonArray(json.jsonArray);
+                    adapter.addAll(newTweets);
+                    max_id = findSmallestId(newTweets);
                 } catch (JSONException e) {
                     Log.e(TAG,"Json exception", e);
                     e.printStackTrace();
@@ -151,5 +183,17 @@ public class TimelineActivity extends AppCompatActivity {
     public void hideProgressBar() {
         // Hide progress item
         miActionProgressItem.setVisible(false);
+    }
+
+    private Long findSmallestId(List<Tweet> tweets) {
+
+        Long smallest = Long.MAX_VALUE;
+        for (Tweet tweet : tweets) {
+            Long current;
+            if ((current = Long.parseLong(tweet.id_str)) <= smallest) {
+                smallest = current;
+            }
+        }
+        return smallest;
     }
 }
