@@ -27,7 +27,8 @@ import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
-    public static final int REQUEST_CODE = 20;
+    public static final int COMPOSE_CODE = 20;
+    public static final int DETAIL_CODE = 21;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -89,7 +90,7 @@ public class TimelineActivity extends AppCompatActivity {
             // Compose icon has been selected
             // Navigate to the compose activity
             Intent intent = new Intent(this, ComposeActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
+            startActivityForResult(intent, COMPOSE_CODE);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -97,7 +98,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == COMPOSE_CODE && resultCode == RESULT_OK) {
             // Get tweet from the intent
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
             // Update the recyclerview with the tweet
@@ -106,6 +107,12 @@ public class TimelineActivity extends AppCompatActivity {
             // update adapter
             adapter.notifyItemInserted(0);
             rvTweets.smoothScrollToPosition(0);
+        }
+        if (requestCode == DETAIL_CODE && resultCode == RESULT_OK) {
+            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+            int position = data.getIntExtra("position",-1);
+            tweets.set(position, tweet);
+            adapter.notifyItemChanged(position);
         }
         super.onActivityResult(requestCode, resultCode, data);
 

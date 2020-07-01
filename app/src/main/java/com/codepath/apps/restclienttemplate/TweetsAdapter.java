@@ -23,6 +23,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.parceler.Parcels;
 
+import java.sql.Time;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -88,7 +89,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 public void onClick(View v) {
                     Intent intent = new Intent(context, ComposeActivity.class);
                     intent.putExtra("tweet", Parcels.wrap(tweet));
-                    timelineActivity.startActivityForResult(intent, TimelineActivity.REQUEST_CODE);
+                    timelineActivity.startActivityForResult(intent, TimelineActivity.COMPOSE_CODE);
                 }
             });
 
@@ -157,7 +158,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 public void onClick(View v) {
                     Intent intent = new Intent(context, DetailActivity.class);
                     intent.putExtra("tweet", Parcels.wrap(tweet));
-                    context.startActivity(intent);
+                    intent.putExtra("position", getAdapterPosition());
+                    timelineActivity.startActivityForResult(intent, TimelineActivity.DETAIL_CODE);
                 }
             });
 
