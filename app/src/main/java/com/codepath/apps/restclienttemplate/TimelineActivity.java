@@ -34,6 +34,7 @@ public class TimelineActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshContainer;
     List<Tweet> tweets;
     TweetsAdapter adapter;
+    MenuItem miActionProgressItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,15 @@ public class TimelineActivity extends AppCompatActivity {
         // Inflate the menu to add the compose button
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Store instance of the menu item containing progress
+        miActionProgressItem = menu.findItem(R.id.miActionProgress);
+
+        // Return to finish
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -124,5 +134,15 @@ public class TimelineActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error: " + response, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void showProgressBar() {
+        // Show progress item
+        miActionProgressItem.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        // Hide progress item
+        miActionProgressItem.setVisible(false);
     }
 }

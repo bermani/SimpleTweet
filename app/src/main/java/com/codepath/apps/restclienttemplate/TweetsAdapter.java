@@ -3,24 +3,29 @@ package com.codepath.apps.restclienttemplate;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.format.Time;
+import android.content.res.ColorStateList;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
 import com.codepath.apps.restclienttemplate.databinding.ItemTweetBinding;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.parceler.Parcels;
 
 import java.util.List;
+
+import okhttp3.Headers;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
@@ -85,11 +90,50 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 }
             });
 
+            if (tweet.retweeted) {
+                setTint(binding.ivRetweetButton, R.color.inline_action_retweet);
+            } else {
+                setTint(binding.ivRetweetButton, R.color.inline_action_retweet_pressed);
+            }
+
             // retweet on click should retweet and change the color
             binding.ivRetweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ((TimelineActivity) context).showProgressBar();
+                    if (tweet.retweeted) {
+                        client.unretweetTweet(tweet.id_str, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                                Log.i("TweetsAdapter", json.toString());
+                                setTint(binding.ivRetweetButton, R.color.inline_action_retweet_pressed);
+                                tweet.toggleRetweeted();
+                                ((TimelineActivity) context).hideProgressBar();
+                            }
 
+                            @Override
+                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                                Log.i("TweetsAdapter", response);
+                                ((TimelineActivity) context).hideProgressBar();
+                            }
+                        });
+                    } else {
+                        client.retweetTweet(tweet.id_str, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                                Log.i("TweetsAdapter", json.toString());
+                                setTint(binding.ivRetweetButton, R.color.inline_action_retweet);
+                                tweet.toggleRetweeted();
+                                ((TimelineActivity) context).hideProgressBar();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                                Log.i("TweetsAdapter", response);
+                                ((TimelineActivity) context).hideProgressBar();
+                            }
+                        });
+                    }
                 }
             });
 
@@ -112,8 +156,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             }
 
             Glide.with(context).load(tweet.user.profileImageUrl).into(binding.ivProfileImage);
-
-
         }
     }
 
@@ -127,5 +169,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     public void addAll(List<Tweet> list) {
         tweets.addAll(list);
         notifyDataSetChanged();
+    }
+
+
+
+
+    private void setTint(ImageView iv,  @ColorRes int colorRes) {
+        ImageViewCompat.setImageTintList(iv, ColorStateList.valueOf(ContextCompat.getColor(context, colorRes)));
     }
 }

@@ -28,6 +28,8 @@ public class Tweet {
     public Integer media_height;
     public Integer media_width;
     public String id_str;
+    public Boolean favorited;
+    public Boolean retweeted;
 
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
@@ -38,6 +40,8 @@ public class Tweet {
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.relativeTime = getRelativeTimeAgo(jsonObject.getString("created_at"));
         tweet.id_str = jsonObject.getString("id_str");
+        tweet.favorited = jsonObject.getBoolean("favorited");
+        tweet.retweeted = jsonObject.getBoolean("retweeted");
         JSONObject entities = jsonObject.getJSONObject("entities");
         if (entities.has("media")) {
             JSONObject media = entities.getJSONArray("media").getJSONObject(0);
@@ -77,5 +81,13 @@ public class Tweet {
         }
 
         return relativeDate;
+    }
+
+    public void toggleRetweeted() {
+        retweeted = !retweeted;
+    }
+
+    public void toggleFavorited() {
+        favorited = !favorited;
     }
 }
