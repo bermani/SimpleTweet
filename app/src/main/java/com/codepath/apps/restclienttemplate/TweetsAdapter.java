@@ -90,49 +90,33 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 }
             });
 
-            if (tweet.retweeted) {
-                setTint(binding.ivRetweetButton, R.color.inline_action_retweet);
-            } else {
-                setTint(binding.ivRetweetButton, R.color.inline_action_retweet_pressed);
-            }
+            // initialize the retweet button color
+            setRetweetButtonColor(binding.ivRetweetButton,tweet.retweeted);
 
-            // retweet on click should retweet and change the color
+            // declare a response handler that toggles the tweet's retweeted state
+            final JsonHttpResponseHandler retweetHandler = new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    tweet.toggleRetweeted();
+                    setRetweetButtonColor(binding.ivRetweetButton, tweet.retweeted);
+                    ((TimelineActivity) context).hideProgressBar();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    ((TimelineActivity) context).hideProgressBar();
+                }
+            };
+
+            // Unretweet if tweet is retweeted, and retweet if not, make API call
             binding.ivRetweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ((TimelineActivity) context).showProgressBar();
                     if (tweet.retweeted) {
-                        client.unretweetTweet(tweet.id_str, new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                                Log.i("TweetsAdapter", json.toString());
-                                setTint(binding.ivRetweetButton, R.color.inline_action_retweet_pressed);
-                                tweet.toggleRetweeted();
-                                ((TimelineActivity) context).hideProgressBar();
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                                Log.i("TweetsAdapter", response);
-                                ((TimelineActivity) context).hideProgressBar();
-                            }
-                        });
+                        client.unretweetTweet(tweet.id_str,retweetHandler);
                     } else {
-                        client.retweetTweet(tweet.id_str, new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                                Log.i("TweetsAdapter", json.toString());
-                                setTint(binding.ivRetweetButton, R.color.inline_action_retweet);
-                                tweet.toggleRetweeted();
-                                ((TimelineActivity) context).hideProgressBar();
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                                Log.i("TweetsAdapter", response);
-                                ((TimelineActivity) context).hideProgressBar();
-                            }
-                        });
+                        client.retweetTweet(tweet.id_str, retweetHandler);
                     }
                 }
             });
@@ -171,10 +155,16 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-
-
-
     private void setTint(ImageView iv,  @ColorRes int colorRes) {
         ImageViewCompat.setImageTintList(iv, ColorStateList.valueOf(ContextCompat.getColor(context, colorRes)));
+    }
+
+    // sets the color of a given retweet button based on a boolean retweeted status
+    private void setRetweetButtonColor(ImageView ivRetweetButton, Boolean retweeted) {
+        if (retweeted) {
+            setTint(ivRetweetButton, R.color.inline_action_retweet);
+        } else {
+            setTint(ivRetweetButton, R.color.inline_action_retweet_pressed);
+        }
     }
 }
