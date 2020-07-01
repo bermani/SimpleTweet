@@ -80,18 +80,21 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             binding.tvScreenName.setText(tweet.user.screenName);
             binding.tvRelativeTime.setText(tweet.relativeTime);
 
+            final TimelineActivity timelineActivity = (TimelineActivity) context;
+
             // reply button click should go to compose activity
             binding.ivReplyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, ComposeActivity.class);
                     intent.putExtra("tweet", Parcels.wrap(tweet));
-                    ((Activity) context).startActivityForResult(intent, TimelineActivity.REQUEST_CODE);
+                    timelineActivity.startActivityForResult(intent, TimelineActivity.REQUEST_CODE);
                 }
             });
 
-            // initialize the retweet button color
+            // initialize the button colors
             setRetweetButtonColor(binding.ivRetweetButton,tweet.retweeted);
+            setFavoriteButtonColor(binding.ivFavoriteButton, tweet.favorited);
 
             // declare a response handler that toggles the tweet's retweeted state
             final JsonHttpResponseHandler retweetHandler = new JsonHttpResponseHandler() {
@@ -99,12 +102,27 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 public void onSuccess(int statusCode, Headers headers, JSON json) {
                     tweet.toggleRetweeted();
                     setRetweetButtonColor(binding.ivRetweetButton, tweet.retweeted);
-                    ((TimelineActivity) context).hideProgressBar();
+                    timelineActivity.hideProgressBar();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    ((TimelineActivity) context).hideProgressBar();
+                    timelineActivity.hideProgressBar();
+                }
+            };
+
+            // declare a response handler that toggles the tweet's favorited state
+            final JsonHttpResponseHandler favoriteHandler = new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Headers headers, JSON json) {
+                    tweet.toggleFavorited();
+                    setFavoriteButtonColor(binding.ivFavoriteButton, tweet.favorited);
+                    timelineActivity.hideProgressBar();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                    timelineActivity.hideProgressBar();
                 }
             };
 
@@ -112,11 +130,23 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             binding.ivRetweetButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((TimelineActivity) context).showProgressBar();
+                    timelineActivity.showProgressBar();
                     if (tweet.retweeted) {
                         client.unretweetTweet(tweet.id_str,retweetHandler);
                     } else {
                         client.retweetTweet(tweet.id_str, retweetHandler);
+                    }
+                }
+            });
+
+            binding.ivFavoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timelineActivity.showProgressBar();
+                    if (tweet.favorited) {
+                        client.unfavoriteTweet(tweet.id_str, favoriteHandler);
+                    } else {
+                        client.favoriteTweet(tweet.id_str, favoriteHandler);
                     }
                 }
             });
@@ -163,8 +193,20 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     private void setRetweetButtonColor(ImageView ivRetweetButton, Boolean retweeted) {
         if (retweeted) {
             setTint(ivRetweetButton, R.color.inline_action_retweet);
+            ivRetweetButton.setImageResource(R.drawable.ic_vector_retweet);
         } else {
-            setTint(ivRetweetButton, R.color.inline_action_retweet_pressed);
+            setTint(ivRetweetButton, R.color.inline_action);
+            ivRetweetButton.setImageResource(R.drawable.ic_vector_retweet_stroke);
+        }
+    }
+
+    private void setFavoriteButtonColor(ImageView ivFavoriteButton, Boolean favorited) {
+        if (favorited) {
+            setTint(ivFavoriteButton, R.color.inline_action_like);
+            ivFavoriteButton.setImageResource(R.drawable.ic_vector_heart);
+        } else {
+            setTint(ivFavoriteButton, R.color.inline_action);
+            ivFavoriteButton.setImageResource(R.drawable.ic_vector_heart_stroke);
         }
     }
 }
