@@ -26,13 +26,9 @@ public class ComposeActivity extends AppCompatActivity {
     public static final int MAX_TWEET_LENGTH = 280;
 
     ActivityComposeBinding binding;
-
     TwitterClient client;
-
     MenuItem miActionProgressItem;
-
     Tweet replyTweet;
-
     JsonHttpResponseHandler handler;
 
     @Override
@@ -46,10 +42,12 @@ public class ComposeActivity extends AppCompatActivity {
 
         replyTweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
 
+        // f this new tweet is a reply, add the @name to the text of the tweet
         if (replyTweet != null) {
             binding.etCompose.setText('@'+replyTweet.user.screenName+' ');
         }
 
+        // jsonResponseHandler for posting a tweet
         handler = new JsonHttpResponseHandler() {
 
             @Override
@@ -76,6 +74,7 @@ public class ComposeActivity extends AppCompatActivity {
         };
     }
 
+    // onClick for the Tweet button. checks for the validity of the tweet text then posts the tweet
     public void onButtonClick(View v) {
         String tweetContent = binding.etCompose.getText().toString();
         if (tweetContent.isEmpty()) {

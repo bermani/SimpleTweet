@@ -8,7 +8,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.system.Int64Ref;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +37,7 @@ public class TimelineActivity extends AppCompatActivity {
     TweetsAdapter adapter;
     MenuItem miActionProgressItem;
 
+    // max_id of next API call to infinitely scroll through tweets
     Long max_id;
 
     @Override
@@ -185,6 +185,7 @@ public class TimelineActivity extends AppCompatActivity {
         miActionProgressItem.setVisible(false);
     }
 
+    // algorithm to find the smallest ID of all new tweets. the smallest ID of new tweets should be the max ID of the next tweets
     private Long findSmallestId(List<Tweet> tweets) {
 
         Long smallest = Long.MAX_VALUE;

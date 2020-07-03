@@ -30,6 +30,8 @@ public class DetailActivity extends AppCompatActivity {
     Tweet tweet;
     MenuItem miActionProgressItem;
     TwitterClient client;
+
+    // store the position of this tweet so we know which tweet to update with new information on activity result
     Integer position;
 
     @Override
@@ -55,6 +57,8 @@ public class DetailActivity extends AppCompatActivity {
                 startActivityForResult(intent, TimelineActivity.COMPOSE_CODE);
             }
         });
+
+        // only show the image if the tweet has an image URL
         if (tweet.media_url.isEmpty()) {
             binding.item.ivMediaImage.setVisibility(View.GONE);
         } else {
@@ -100,7 +104,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         };
 
-        // Unretweet if tweet is retweeted, and retweet if not, make API call
+        // Unretweet if tweet is retweeted, and retweet if not, and make the proper API call
         binding.item.ivRetweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +117,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        // same for favorite
         binding.item.ivFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,10 +166,12 @@ public class DetailActivity extends AppCompatActivity {
         miActionProgressItem.setVisible(false);
     }
 
+    // helper function to set the tint of any arbitrary ImageView
     private void setTint(ImageView iv,  @ColorRes int colorRes) {
         ImageViewCompat.setImageTintList(iv, ColorStateList.valueOf(ContextCompat.getColor(this, colorRes)));
     }
 
+    // set the retweet button's color and style based on a boolean retweeted status
     private void setRetweetButtonColor(ImageView ivRetweetButton, Boolean retweeted) {
         if (retweeted) {
             setTint(ivRetweetButton, R.color.inline_action_retweet);
@@ -175,6 +182,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    // set the favorite button's color and style based on a boolean favorited status
     private void setFavoriteButtonColor(ImageView ivFavoriteButton, Boolean favorited) {
         if (favorited) {
             setTint(ivFavoriteButton, R.color.inline_action_like);

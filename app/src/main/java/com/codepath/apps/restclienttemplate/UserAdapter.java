@@ -72,6 +72,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             binding.ivBio.setText(user.bio);
             binding.ivName.setText(user.screenName);
             Glide.with(context).load(user.profileImageUrl).into(binding.ivProfileImage);
+
+            // all profile images should take the user to the next profile
             binding.ivProfileImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

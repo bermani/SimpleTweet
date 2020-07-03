@@ -20,6 +20,7 @@ public class Tweet {
     // empty constructor for parceler
     public Tweet() {}
 
+    // all important fields of the Tweet object
     public String body;
     public String createdAt;
     public User user;
@@ -32,6 +33,7 @@ public class Tweet {
     public Boolean retweeted;
 
 
+    // generate a tweet from a tweet JSONObject
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
@@ -56,6 +58,7 @@ public class Tweet {
         return tweet;
     }
 
+    // generate a list of tweets from a JSONArray of Tweet objects
     public static List<Tweet> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Tweet> tweets = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
@@ -64,7 +67,7 @@ public class Tweet {
         return tweets;
     }
 
-    // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
+    // get the relative time ago in a nicely formatted string given a timestamp
     private static String getRelativeTimeAgo(String rawJsonDate) {
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);

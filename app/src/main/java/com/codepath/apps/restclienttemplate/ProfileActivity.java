@@ -36,6 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
     UserAdapter adapter;
     MenuItem miActionProgressItem;
 
+    // cursor for paginating through API calls
     int cursor;
 
     @Override
@@ -47,17 +48,17 @@ public class ProfileActivity extends AppCompatActivity {
         client = TwitterApp.getRestClient(this);
         user = Parcels.unwrap(getIntent().getParcelableExtra("user"));
 
+        // populate layout with data
         Glide.with(this).load(user.profileImageUrl).into(binding.ivProfileImage);
         binding.tvName.setText(user.screenName);
         binding.tvBio.setText(user.bio);
-
         binding.tabLayout.getTabAt(0).setText(user.followers.toString() + " FOLLOWERS");
         binding.tabLayout.getTabAt(1).setText(user.followings.toString() + " FOLLOWING");
 
+        // setup RecyclerView
         users = new ArrayList<>();
         adapter = new UserAdapter(this, users, client);
         cursor = -1;
-
         LinearLayoutManager manager = new LinearLayoutManager(this);
         binding.rvUsers.setLayoutManager(manager);
         binding.rvUsers.setAdapter(adapter);
@@ -72,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        // on tab change, we should clear the recyclerview and start the API call for the proper route
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -128,6 +130,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    // helper function to get the next page of followers. will do nothing if reached the end (cursor == 0)
     private void getFollowers() {
         if (cursor == 0) {
             return;
@@ -157,6 +160,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    // helper function to get the next page of followings. will do nothing if reached the end (cursor == 0)
     private void getFollowings() {
         if (cursor == 0) {
             return;
@@ -185,6 +189,4 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }

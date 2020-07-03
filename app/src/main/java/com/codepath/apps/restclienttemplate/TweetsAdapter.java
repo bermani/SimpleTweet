@@ -197,11 +197,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
+    // helper function to set the color of an arbitrary ImageView
     private void setTint(ImageView iv,  @ColorRes int colorRes) {
         ImageViewCompat.setImageTintList(iv, ColorStateList.valueOf(ContextCompat.getColor(context, colorRes)));
     }
 
-    // sets the color of a given retweet button based on a boolean retweeted status
+    // sets the color and style of a given retweet button based on a boolean retweeted status
     private void setRetweetButtonColor(ImageView ivRetweetButton, Boolean retweeted) {
         if (retweeted) {
             setTint(ivRetweetButton, R.color.inline_action_retweet);
@@ -212,6 +213,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         }
     }
 
+    // sets the color and style of a given favorite button based on a boolean favorited status
     private void setFavoriteButtonColor(ImageView ivFavoriteButton, Boolean favorited) {
         if (favorited) {
             setTint(ivFavoriteButton, R.color.inline_action_like);

@@ -14,6 +14,7 @@ public class User {
     // empty constructor for parceler
     public User() {}
 
+    // all relevant user fields
     public String name;
     public String screenName;
     public String profileImageUrl;
@@ -22,6 +23,7 @@ public class User {
     public Integer followers;
     public Integer followings;
 
+    // generate a User object given a User jsonObject
     public static User fromJson(JSONObject jsonObject) throws JSONException {
         User user = new User();
         user.name = jsonObject.getString("name");
@@ -34,6 +36,7 @@ public class User {
         return user;
     }
 
+    // generate a list of User objects given a JSONArray of User jsonObjects
     public static List<User> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); ++i) {
