@@ -93,6 +93,16 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 }
             });
 
+            // profile image should go to profile activity
+            binding.ivProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.putExtra("user",Parcels.wrap(tweet.user));
+                    timelineActivity.startActivity(intent);
+                }
+            });
+
             // initialize the button colors
             setRetweetButtonColor(binding.ivRetweetButton,tweet.retweeted);
             setFavoriteButtonColor(binding.ivFavoriteButton, tweet.favorited);
