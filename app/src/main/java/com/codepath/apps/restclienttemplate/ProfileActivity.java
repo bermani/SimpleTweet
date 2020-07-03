@@ -51,6 +51,9 @@ public class ProfileActivity extends AppCompatActivity {
         binding.tvName.setText(user.screenName);
         binding.tvBio.setText(user.bio);
 
+        binding.tabLayout.getTabAt(0).setText(user.followers.toString() + " FOLLOWERS");
+        binding.tabLayout.getTabAt(1).setText(user.followings.toString() + " FOLLOWING");
+
         users = new ArrayList<>();
         adapter = new UserAdapter(this, users, client);
         cursor = -1;
