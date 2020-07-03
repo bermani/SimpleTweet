@@ -33,26 +33,27 @@ The following **stretch** features are implemented:
 * [ ] Compose tweet functionality is built using modal overlay
 * [x] User can **click a link within a tweet body** on tweet details view. The click will launch the web browser with relevant page opened.
 * [x] Replace all icon drawables and other static image assets with [vector drawables](http://guides.codepath.org/android/Drawables#vector-drawables) where appropriate.
-* [ ] User can view following / followers list through any profile they view.
+* [X] User can view following / followers list through any profile they view.
 * [x] Use the View Binding library to reduce view boilerplate.
 * [ ] On the Twitter timeline, apply scrolling effects such as [hiding/showing the toolbar](http://guides.codepath.org/android/Using-the-App-ToolBar#reacting-to-scroll) by implementing [CoordinatorLayout](http://guides.codepath.org/android/Handling-Scrolls-with-CoordinatorLayout#responding-to-scroll-events).
 * [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 
 The following **additional** features are implemented:
 
-* [ ] List anything else that you can get done to improve the app functionality!
+* [X] User can see total followers and following on the details page
+* [X] User can click through followers of followers to find any user through the details page
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='./walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+GIF created with [Kap](http://getkap.co/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+This app was a true test of the Android dev knowledge I've gained so far. I had to implement multiple RecyclerViews from scratch, create many different activities for different purposes, and properly link all the components together. It also required me to brush up on REST API concepts, gain familiarity with the Twitter API, and implement many routes. Integrating with the REST API was a challenge due to the fact that asychronous calls requires a different kind of thinking to properly perform app logic. Also, when test-running intermediate builds of the app, sometimes my code would run a REST request repeatedly, which would cause the Twitter API to rate limit my API key and force me to take a break from what I was working on. Another challenge was the difficulty in organizing and keeping track of many new files, activities, and classes.
 
 ## Open-source libraries used
 
